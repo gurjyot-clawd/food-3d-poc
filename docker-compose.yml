@@ -1,0 +1,25 @@
+version: "3.9"
+services:
+  backend:
+    build: ./backend
+    command: bash -c "~/.local/bin/poetry run uvicorn app.main:app --host 0.0.0.0 --port 8000"
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/app
+      - ./storage:/storage
+    environment:
+      - PYTHONUNBUFFERED=1
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+  frontend:
+    build: ./frontend
+    command: npm run dev -- --hostname 0.0.0.0 --port 3000
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend:/app
+    environment:
+      - NEXT_PUBLIC_API_BASE=http://localhost:8000/api
