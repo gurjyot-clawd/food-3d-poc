@@ -1,0 +1,60 @@
+services:
+  - type: web
+    name: food-3d-backend
+    env: docker
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    plan: free
+    envVars:
+      - key: API_PREFIX
+        value: /api
+      - key: STORAGE_ROOT
+        value: /tmp/storage
+      - key: REDIS_URL
+        fromService:
+          type: redis
+          name: food-3d-redis
+          property: connectionString
+      - key: CELERY_BROKER_URL
+        fromService:
+          type: redis
+          name: food-3d-redis
+          property: connectionString
+      - key: CELERY_RESULT_BACKEND
+        fromService:
+          type: redis
+          name: food-3d-redis
+          property: connectionString
+
+  - type: worker
+    name: food-3d-worker
+    env: docker
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    startCommand: poetry run celery -A app.workers.celery_app worker --loglevel=info -Q reconstruct
+    plan: free
+    envVars:
+      - key: API_PREFIX
+        value: /api
+      - key: STORAGE_ROOT
+        value: /tmp/storage
+      - key: REDIS_URL
+        fromService:
+          type: redis
+          name: food-3d-redis
+          property: connectionString
+      - key: CELERY_BROKER_URL
+        fromService:
+          type: redis
+          name: food-3d-redis
+          property: connectionString
+      - key: CELERY_RESULT_BACKEND
+        fromService:
+          type: redis
+          name: food-3d-redis
+          property: connectionString
+
+  - type: redis
+    name: food-3d-redis
+    plan: free
+    maxmemoryPolicy: noeviction
