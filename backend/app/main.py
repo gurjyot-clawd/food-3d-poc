@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 
 from app.api.routes import jobs
 from app.core.config import get_settings
@@ -17,6 +18,8 @@ app.add_middleware(
 )
 
 app.include_router(jobs.router, prefix=settings.api_prefix)
+
+app.mount("/storage", StaticFiles(directory=str(settings.storage_root)), name="storage")
 
 
 @app.get("/health")
