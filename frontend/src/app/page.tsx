@@ -3,7 +3,7 @@
 import { useState, useRef, useCallback } from 'react';
 import styles from './page.module.css';
 
-const API_BASE = process.env.NEXT_PUBLIC_API_BASE ?? 'http://localhost:8000/api';
+const API_BASE = process.env.NEXT_PUBLIC_API_BASE ?? 'https://food-3d-backend.onrender.com/api';
 
 type JobMode = 'photo' | 'video';
 type JobStatus = 'queued' | 'running' | 'done' | 'failed';
